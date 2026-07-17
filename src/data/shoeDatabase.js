@@ -445,6 +445,191 @@ const getVisualImageForShoe = (brand, name) => {
 };
 
 // Expand a parsed category shoe from parsed_shoes.json into a full comparison object
+// Helper function to generate listings for both Indian and Global markets with real links
+export const createListingsForShoe = (shoeId, brand, name, baseResellUSD) => {
+  const brandLower = brand.toLowerCase();
+  
+  // 1. Foreign (GLOBAL) Listings in USD ($)
+  const globalListings = [
+    {
+      id: `list-${shoeId}-stockx`,
+      merchant: "StockX",
+      price: baseResellUSD,
+      originalPrice: baseResellUSD,
+      discount: 0,
+      quantity: Math.floor(Math.random() * 15) + 3,
+      merchantRating: 4.8,
+      safety: "Safe",
+      shippingDays: "5-8",
+      link: `https://stockx.com/search?s=${encodeURIComponent(name)}`,
+      market: "GLOBAL",
+      currency: "$"
+    },
+    {
+      id: `list-${shoeId}-goat`,
+      merchant: "GOAT",
+      price: Math.round(baseResellUSD * 1.05),
+      originalPrice: Math.round(baseResellUSD * 1.05),
+      discount: 0,
+      quantity: Math.floor(Math.random() * 12) + 2,
+      merchantRating: 4.9,
+      safety: "Safe",
+      shippingDays: "3-5",
+      link: `https://www.goat.com/search?query=${encodeURIComponent(name)}`,
+      market: "GLOBAL",
+      currency: "$"
+    },
+    {
+      id: `list-${shoeId}-flightclub`,
+      merchant: "Flight Club",
+      price: Math.round(baseResellUSD * 1.1),
+      originalPrice: Math.round(baseResellUSD * 1.1),
+      discount: 0,
+      quantity: Math.floor(Math.random() * 8) + 1,
+      merchantRating: 4.7,
+      safety: "Safe",
+      shippingDays: "2-4",
+      link: `https://www.flightclub.com/catalogsearch/result?q=${encodeURIComponent(name)}`,
+      market: "GLOBAL",
+      currency: "$"
+    },
+    {
+      id: `list-${shoeId}-ebay`,
+      merchant: "eBay (Verified Seller)",
+      price: Math.round(baseResellUSD * 0.94),
+      originalPrice: baseResellUSD,
+      discount: 6,
+      quantity: Math.floor(Math.random() * 4) + 1,
+      merchantRating: 4.5,
+      safety: "Caution",
+      shippingDays: "4-7",
+      link: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(name)}`,
+      market: "GLOBAL",
+      currency: "$"
+    }
+  ];
+
+  // 2. Indian (IN) Listings in INR (₹)
+  const baseResellINR = Math.round((baseResellUSD * 95) / 500) * 500;
+  const indianListings = [
+    {
+      id: `list-${shoeId}-mainstreet`,
+      merchant: "Mainstreet Marketplace",
+      price: baseResellINR,
+      originalPrice: Math.round((baseResellINR * 1.15) / 500) * 500,
+      discount: 13,
+      quantity: Math.floor(Math.random() * 5) + 1,
+      merchantRating: 4.7,
+      safety: "Safe",
+      shippingDays: "2-4",
+      link: `https://marketplace.mainstreet.co.in/search?q=${encodeURIComponent(name)}`,
+      market: "IN",
+      currency: "₹"
+    },
+    {
+      id: `list-${shoeId}-crepdog`,
+      merchant: "Crepdog Crew (CDC)",
+      price: Math.round((baseResellINR * 1.02) / 500) * 500,
+      originalPrice: Math.round((baseResellINR * 1.02) / 500) * 500,
+      discount: 0,
+      quantity: Math.floor(Math.random() * 7) + 2,
+      merchantRating: 4.6,
+      safety: "Safe",
+      shippingDays: "3-5",
+      link: `https://crepdogcrew.com/search?q=${encodeURIComponent(name)}`,
+      market: "IN",
+      currency: "₹"
+    },
+    {
+      id: `list-${shoeId}-solesearch`,
+      merchant: "SoleSearch India",
+      price: Math.round((baseResellINR * 0.98) / 500) * 500,
+      originalPrice: Math.round((baseResellINR * 0.98) / 500) * 500,
+      discount: 0,
+      quantity: Math.floor(Math.random() * 3) + 1,
+      merchantRating: 4.4,
+      safety: "Safe",
+      shippingDays: "3-6",
+      link: `https://www.solesearchindia.com/search?q=${encodeURIComponent(name)}`,
+      market: "IN",
+      currency: "₹"
+    }
+  ];
+
+  // Brand-specific Indian retail stores (if applicable/available)
+  if (brandLower === "nike" || brandLower === "jordan") {
+    const retailPriceINR = Math.round((baseResellUSD * 0.75 * 90) / 100) * 100;
+    indianListings.push({
+      id: `list-${shoeId}-nikein`,
+      merchant: "Nike India Official",
+      price: retailPriceINR,
+      originalPrice: retailPriceINR,
+      discount: 0,
+      quantity: Math.floor(Math.random() * 10),
+      merchantRating: 4.9,
+      safety: "Safe",
+      shippingDays: "4-7",
+      link: `https://www.nike.com/in/w?q=${encodeURIComponent(name)}`,
+      market: "IN",
+      currency: "₹"
+    });
+  } else if (brandLower === "adidas") {
+    const retailPriceINR = Math.round((baseResellUSD * 0.75 * 90) / 100) * 100;
+    indianListings.push({
+      id: `list-${shoeId}-adidasin`,
+      merchant: "Adidas India Official",
+      price: retailPriceINR,
+      originalPrice: retailPriceINR,
+      discount: 0,
+      quantity: Math.floor(Math.random() * 10),
+      merchantRating: 4.9,
+      safety: "Safe",
+      shippingDays: "3-5",
+      link: `https://www.adidas.co.in/search?q=${encodeURIComponent(name)}`,
+      market: "IN",
+      currency: "₹"
+    });
+  }
+
+  // VegNonVeg / Superkicks
+  if (Math.random() > 0.3) {
+    const priceVNV = Math.round((baseResellINR * 0.9) / 500) * 500;
+    indianListings.push({
+      id: `list-${shoeId}-vegnonveg`,
+      merchant: "VegNonVeg",
+      price: priceVNV,
+      originalPrice: priceVNV,
+      discount: 0,
+      quantity: Math.floor(Math.random() * 4),
+      merchantRating: 4.8,
+      safety: "Safe",
+      shippingDays: "2-4",
+      link: `https://www.vegnonveg.com/search?q=${encodeURIComponent(name)}`,
+      market: "IN",
+      currency: "₹"
+    });
+  }
+  if (Math.random() > 0.4) {
+    const priceSK = Math.round((baseResellINR * 0.92) / 500) * 500;
+    indianListings.push({
+      id: `list-${shoeId}-superkicks`,
+      merchant: "Superkicks",
+      price: priceSK,
+      originalPrice: priceSK,
+      discount: 0,
+      quantity: Math.floor(Math.random() * 5),
+      merchantRating: 4.7,
+      safety: "Safe",
+      shippingDays: "2-4",
+      link: `https://www.superkicks.in/search?q=${encodeURIComponent(name)}`,
+      market: "IN",
+      currency: "₹"
+    });
+  }
+
+  return [...globalListings, ...indianListings];
+};
+
 export const expandParsedShoe = (parsedShoe) => {
   const shoeId = `parsed-${parsedShoe.slug}-${parsedShoe.name.replace(/[^a-zA-Z0-9]/g, "")}`;
   
@@ -482,44 +667,7 @@ export const expandParsedShoe = (parsedShoe) => {
       status: "Safe",
       details: `Official template check completed for ${name}. Hourglass heel check passed. Midsole stitch density meets standard factory tolerance limits.`
     },
-    listings: [
-      {
-        id: `list-${shoeId}-stockx`,
-        merchant: "StockX",
-        price: baseResell,
-        originalPrice: baseResell,
-        discount: 0,
-        quantity: Math.floor(Math.random() * 12) + 2,
-        merchantRating: 4.8,
-        safety: "Safe",
-        shippingDays: "5-8",
-        link: "https://stockx.com"
-      },
-      {
-        id: `list-${shoeId}-goat`,
-        merchant: "GOAT",
-        price: Math.round(baseResell * 1.04),
-        originalPrice: Math.round(baseResell * 1.04),
-        discount: 0,
-        quantity: Math.floor(Math.random() * 15) + 3,
-        merchantRating: 4.9,
-        safety: "Safe",
-        shippingDays: "3-5",
-        link: "https://goat.com"
-      },
-      {
-        id: `list-${shoeId}-ebay`,
-        merchant: "eBay Seller",
-        price: Math.round(baseResell * 0.93),
-        originalPrice: baseResell,
-        discount: 7,
-        quantity: Math.floor(Math.random() * 3) + 1,
-        merchantRating: 4.4,
-        safety: "Caution",
-        shippingDays: "4-7",
-        link: "https://ebay.com"
-      }
-    ]
+    listings: createListingsForShoe(shoeId, brand, name, baseResell)
   };
 };
 
@@ -587,44 +735,7 @@ export const generateShoeProcedurally = (query) => {
       status: "Safe",
       details: "Procedural validation matches global retail database templates. Hourglass check, leather flexibility factor, and barcode tag patterns are verified."
     },
-    listings: [
-      {
-        id: `list-${shoeId}-stockx`,
-        merchant: "StockX",
-        price: baseResell,
-        originalPrice: baseResell,
-        discount: 0,
-        quantity: Math.floor(Math.random() * 15) + 3,
-        merchantRating: 4.8,
-        safety: "Safe",
-        shippingDays: "5-8",
-        link: "https://stockx.com"
-      },
-      {
-        id: `list-${shoeId}-goat`,
-        merchant: "GOAT",
-        price: Math.round(baseResell * 1.05),
-        originalPrice: Math.round(baseResell * 1.05),
-        discount: 0,
-        quantity: Math.floor(Math.random() * 20) + 5,
-        merchantRating: 4.9,
-        safety: "Safe",
-        shippingDays: "3-5",
-        link: "https://goat.com"
-      },
-      {
-        id: `list-${shoeId}-ebay`,
-        merchant: "eBay Seller",
-        price: Math.round(baseResell * 0.92),
-        originalPrice: baseResell,
-        discount: 8,
-        quantity: Math.floor(Math.random() * 4) + 1,
-        merchantRating: 4.4,
-        safety: "Caution",
-        shippingDays: "4-7",
-        link: "https://ebay.com"
-      }
-    ]
+    listings: createListingsForShoe(shoeId, brand, finalName, baseResell)
   };
 };
 
@@ -632,7 +743,13 @@ export const generateShoeProcedurally = (query) => {
 const popularParsedSeed = parsedShoes.map(p => expandParsedShoe(p));
 
 export const shoes = [
-  ...coreShoes,
+  ...coreShoes.map(shoe => {
+    const baseResell = shoe.listings?.[0]?.price || shoe.retailPrice;
+    return {
+      ...shoe,
+      listings: createListingsForShoe(shoe.id, shoe.brand, shoe.name, baseResell)
+    };
+  }),
   ...popularParsedSeed
 ];
 
