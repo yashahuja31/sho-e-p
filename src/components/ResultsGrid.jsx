@@ -23,6 +23,8 @@ export default function ResultsGrid({ shoes, filters, onSelectShoe }) {
   const getFilteredListings = (listings) => {
     return listings
       .filter((item) => {
+        // Market Filter
+        if (item.market !== filters.market) return false;
         // Price Filter
         if (item.price > filters.maxPrice) return false;
         // Sale Filter
@@ -51,7 +53,11 @@ export default function ResultsGrid({ shoes, filters, onSelectShoe }) {
         // Find best price available
         const prices = filteredListings.map(l => l.price);
         const bestPrice = prices.length > 0 ? Math.min(...prices) : null;
-        const retailDiff = bestPrice ? bestPrice - shoe.retailPrice : 0;
+        
+        const displayRetailPrice = filters.market === "IN" 
+          ? Math.round((shoe.retailPrice * 90) / 100) * 100 
+          : shoe.retailPrice;
+        const retailDiff = bestPrice ? bestPrice - displayRetailPrice : 0;
         
         return (
           <div key={shoe.id} className="shoe-result-card glass-panel fade-in">
@@ -96,7 +102,9 @@ export default function ResultsGrid({ shoes, filters, onSelectShoe }) {
                   </div>
                   <span className="reviews-count">({shoe.reviewsCount} reviews)</span>
                   <div className="divider-dot"></div>
-                  <span className="retail-price-label">Retail: ${shoe.retailPrice}</span>
+                  <span className="retail-price-label">
+                    Retail: {filters.market === "IN" ? `₹${displayRetailPrice.toLocaleString('en-IN')}` : `$${shoe.retailPrice}`}
+                  </span>
                 </div>
 
                 <p className="shoe-desc-preview">{shoe.description}</p>
@@ -119,7 +127,9 @@ export default function ResultsGrid({ shoes, filters, onSelectShoe }) {
                 <h4>Available Marketplace Offers ({filteredListings.length})</h4>
                 {bestPrice && (
                   <p className="best-price-badge">
-                    Best Offer: <span className="best-price-val">${bestPrice}</span>
+                    Best Offer: <span className="best-price-val">
+                      {filters.market === "IN" ? "₹" : "$"}{bestPrice.toLocaleString(filters.market === "IN" ? 'en-IN' : 'en-US')}
+                    </span>
                   </p>
                 )}
               </div>
@@ -171,11 +181,17 @@ export default function ResultsGrid({ shoes, filters, onSelectShoe }) {
                               <div className="price-info">
                                 {isSale ? (
                                   <>
-                                    <span className="slashed-price">${listing.originalPrice}</span>
-                                    <span className="discounted-price">${listing.price}</span>
+                                    <span className="slashed-price">
+                                      {listing.currency || "$"}{listing.originalPrice.toLocaleString(listing.currency === "₹" ? 'en-IN' : 'en-US')}
+                                    </span>
+                                    <span className="discounted-price">
+                                      {listing.currency || "$"}{listing.price.toLocaleString(listing.currency === "₹" ? 'en-IN' : 'en-US')}
+                                    </span>
                                   </>
                                 ) : (
-                                  <span className="normal-price">${listing.price}</span>
+                                  <span className="normal-price">
+                                    {listing.currency || "$"}{listing.price.toLocaleString(listing.currency === "₹" ? 'en-IN' : 'en-US')}
+                                  </span>
                                 )}
                               </div>
                             </td>

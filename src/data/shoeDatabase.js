@@ -760,44 +760,7 @@ Return your answer EXACTLY as a JSON object with this shape:
         status: "Safe",
         details: data.authenticityReport
       },
-      listings: [
-        {
-          id: `list-${newId}-stockx`,
-          merchant: "StockX",
-          price: resellPrice,
-          originalPrice: resellPrice,
-          discount: 0,
-          quantity: 6,
-          merchantRating: 4.8,
-          safety: "Safe",
-          shippingDays: "5-8",
-          link: "https://stockx.com"
-        },
-        {
-          id: `list-${newId}-goat`,
-          merchant: "GOAT",
-          price: Math.round(resellPrice * 1.04),
-          originalPrice: Math.round(resellPrice * 1.04),
-          discount: 0,
-          quantity: 11,
-          merchantRating: 4.9,
-          safety: "Safe",
-          shippingDays: "3-5",
-          link: "https://goat.com"
-        },
-        {
-          id: `list-${newId}-ebay`,
-          merchant: "eBay Seller",
-          price: Math.round(resellPrice * 0.94),
-          originalPrice: resellPrice,
-          discount: 6,
-          quantity: 2,
-          merchantRating: 4.5,
-          safety: "Caution",
-          shippingDays: "4-7",
-          link: "https://ebay.com"
-        }
-      ]
+      listings: createListingsForShoe(newId, data.brand, data.model, resellPrice)
     };
   } catch (error) {
     console.error("Error researching shoe with Gemini API:", error);
@@ -859,44 +822,7 @@ Return your answer EXACTLY as a JSON object with this shape:
         status: "Caution",
         details: "Gemini Vision analysis confirms structural outlines, branding marks, and lace styling match authentic specifications. However, physical materials cannot be verified over digital image."
       },
-      listings: [
-        {
-          id: `list-${newId}-stockx`,
-          merchant: "StockX",
-          price: 240,
-          originalPrice: 240,
-          discount: 0,
-          quantity: 4,
-          merchantRating: 4.8,
-          safety: "Safe",
-          shippingDays: "5-8",
-          link: "https://stockx.com"
-        },
-        {
-          id: `list-${newId}-goat`,
-          merchant: "GOAT",
-          price: 255,
-          originalPrice: 255,
-          discount: 0,
-          quantity: 6,
-          merchantRating: 4.9,
-          safety: "Safe",
-          shippingDays: "3-5",
-          link: "https://goat.com"
-        },
-        {
-          id: `list-${newId}-ebay`,
-          merchant: "eBay Seller",
-          price: 199,
-          originalPrice: 220,
-          discount: 10,
-          quantity: 1,
-          merchantRating: 4.4,
-          safety: "Caution",
-          shippingDays: "4-7",
-          link: "https://ebay.com"
-        }
-      ]
+      listings: createListingsForShoe(newId, data.brand, data.model, 240)
     };
     
     return dynamicShoe;

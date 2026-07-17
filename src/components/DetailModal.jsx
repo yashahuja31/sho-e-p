@@ -1,17 +1,24 @@
 import React from "react";
-import { X, ShieldCheck, ShieldAlert, Calendar, DollarSign, Tag, Info, CheckCircle, BarChart3 } from "lucide-react";
+import { X, ShieldCheck, ShieldAlert, Calendar, DollarSign, Tag, Info, CheckCircle, BarChart3, IndianRupee } from "lucide-react";
 
-export default function DetailModal({ shoe, onClose }) {
+export default function DetailModal({ shoe, market = "IN", onClose }) {
   if (!shoe) return null;
+
+  const getDisplayPrice = (usdPrice) => {
+    if (market === "IN") {
+      return Math.round((usdPrice * 95) / 500) * 500;
+    }
+    return usdPrice;
+  };
 
   // Generate simulated historical price trends (last 6 months)
   const priceHistory = [
-    { month: "Jan", price: Math.round(shoe.retailPrice * 1.3) },
-    { month: "Feb", price: Math.round(shoe.retailPrice * 1.45) },
-    { month: "Mar", price: Math.round(shoe.retailPrice * 1.6) },
-    { month: "Apr", price: Math.round(shoe.retailPrice * 1.55) },
-    { month: "May", price: Math.round(shoe.retailPrice * 1.7) },
-    { month: "Jun", price: Math.round(shoe.retailPrice * 1.85) }
+    { month: "Jan", price: getDisplayPrice(Math.round(shoe.retailPrice * 1.3)) },
+    { month: "Feb", price: getDisplayPrice(Math.round(shoe.retailPrice * 1.45)) },
+    { month: "Mar", price: getDisplayPrice(Math.round(shoe.retailPrice * 1.6)) },
+    { month: "Apr", price: getDisplayPrice(Math.round(shoe.retailPrice * 1.55)) },
+    { month: "May", price: getDisplayPrice(Math.round(shoe.retailPrice * 1.7)) },
+    { month: "Jun", price: getDisplayPrice(Math.round(shoe.retailPrice * 1.85)) }
   ];
 
   const maxHistoricalPrice = Math.max(...priceHistory.map(h => h.price));
@@ -58,10 +65,18 @@ export default function DetailModal({ shoe, onClose }) {
                   </div>
                 </div>
                 <div className="spec-item">
-                  <DollarSign size={16} className="spec-icon" />
+                  {market === "IN" ? (
+                    <IndianRupee size={16} className="spec-icon" />
+                  ) : (
+                    <DollarSign size={16} className="spec-icon" />
+                  )}
                   <div>
                     <span className="spec-label">Retail Price</span>
-                    <span className="spec-val">${shoe.retailPrice}</span>
+                    <span className="spec-val">
+                      {market === "IN" 
+                        ? `₹${Math.round((shoe.retailPrice * 90) / 100) * 100}` 
+                        : `$${shoe.retailPrice}`}
+                    </span>
                   </div>
                 </div>
                 <div className="spec-item">
@@ -138,7 +153,9 @@ export default function DetailModal({ shoe, onClose }) {
                   return (
                     <div key={idx} className="chart-column">
                       <div className="chart-bar-wrapper">
-                        <div className="bar-value-tooltip">${historyItem.price}</div>
+                        <div className="bar-value-tooltip">
+                          {market === "IN" ? "₹" : "$"}{historyItem.price.toLocaleString(market === "IN" ? 'en-IN' : 'en-US')}
+                        </div>
                         <div 
                           className="chart-bar" 
                           style={{ height: `${barHeightPct}%` }}

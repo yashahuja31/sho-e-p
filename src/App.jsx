@@ -12,9 +12,10 @@ import { useUser, useClerk } from "@clerk/clerk-react";
 const DEFAULT_FILTERS = {
   sortBy: "price-asc",
   selectedBrand: "All",
-  maxPrice: 600,
+  maxPrice: 80000,
   onlySale: false,
-  onlySafe: false
+  onlySafe: false,
+  market: "IN"
 };
 
 export default function App({ isClerkActive }) {
@@ -256,6 +257,7 @@ export default function App({ isClerkActive }) {
       {selectedShoe && (
         <DetailModal 
           shoe={selectedShoe} 
+          market={filters.market}
           onClose={() => setSelectedShoe(null)} 
         />
       )}

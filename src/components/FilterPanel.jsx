@@ -1,5 +1,5 @@
 import React from "react";
-import { SlidersHorizontal, ArrowUpDown, ShieldCheck, Percent, DollarSign, RefreshCw } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, ShieldCheck, Percent, DollarSign, RefreshCw, IndianRupee } from "lucide-react";
 
 export default function FilterPanel({ filters, setFilters, onReset }) {
   const brands = ["All", "Nike", "Jordan", "Adidas", "New Balance"];
@@ -20,6 +20,15 @@ export default function FilterPanel({ filters, setFilters, onReset }) {
     setFilters({ ...filters, maxPrice: parseInt(e.target.value, 10) });
   };
 
+  const handleMarketChange = (market) => {
+    const defaultMaxPrice = market === "IN" ? 80000 : 800;
+    setFilters({
+      ...filters,
+      market: market,
+      maxPrice: defaultMaxPrice
+    });
+  };
+
   return (
     <div className="filter-sidebar glass-panel fade-in">
       <div className="filter-header">
@@ -36,6 +45,29 @@ export default function FilterPanel({ filters, setFilters, onReset }) {
           <RefreshCw size={14} /> Reset
         </button>
       </div>
+
+      {/* Market Region Toggle */}
+      <div className="filter-section">
+        <label className="filter-label">Marketplace Region</label>
+        <div className="market-toggle-grid">
+          <button
+            type="button"
+            className={`market-tab-btn ${filters.market === "IN" ? "active" : ""}`}
+            onClick={() => handleMarketChange("IN")}
+          >
+            🇮🇳 India (₹)
+          </button>
+          <button
+            type="button"
+            className={`market-tab-btn ${filters.market === "GLOBAL" ? "active" : ""}`}
+            onClick={() => handleMarketChange("GLOBAL")}
+          >
+            🌐 Foreign ($)
+          </button>
+        </div>
+      </div>
+
+      <div className="filter-divider"></div>
 
       <div className="filter-section">
         <label className="filter-label">
@@ -76,21 +108,29 @@ export default function FilterPanel({ filters, setFilters, onReset }) {
 
       <div className="filter-section">
         <label className="filter-label">
-          <DollarSign size={14} /> Max Merchant Price (${filters.maxPrice})
+          {filters.market === "IN" ? (
+            <>
+              <IndianRupee size={14} /> Max Merchant Price (₹{filters.maxPrice.toLocaleString('en-IN')})
+            </>
+          ) : (
+            <>
+              <DollarSign size={14} /> Max Merchant Price (${filters.maxPrice})
+            </>
+          )}
         </label>
         <div className="price-slider-wrapper">
           <input
             type="range"
-            min="50"
-            max="600"
-            step="10"
+            min={filters.market === "IN" ? "5000" : "50"}
+            max={filters.market === "IN" ? "100000" : "1000"}
+            step={filters.market === "IN" ? "1000" : "10"}
             className="price-slider"
             value={filters.maxPrice}
             onChange={handlePriceChange}
           />
           <div className="slider-labels">
-            <span>$50</span>
-            <span>$600</span>
+            <span>{filters.market === "IN" ? "₹5,000" : "$50"}</span>
+            <span>{filters.market === "IN" ? "₹1,00,000" : "$1,000"}</span>
           </div>
         </div>
       </div>
@@ -172,6 +212,45 @@ export default function FilterPanel({ filters, setFilters, onReset }) {
 
         .btn-reset-filters:hover {
           color: var(--accent-primary);
+        }
+
+        /* Market Region Toggles */
+        .market-toggle-grid {
+          display: flex;
+          gap: 0.5rem;
+          background: var(--bg-tertiary);
+          padding: 0.25rem;
+          border-radius: 10px;
+          border: 1px solid var(--border-glass);
+        }
+
+        .market-tab-btn {
+          flex: 1;
+          background: none;
+          border: none;
+          color: var(--text-secondary);
+          padding: 0.5rem;
+          border-radius: 8px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all var(--transition-fast);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.3rem;
+        }
+
+        .market-tab-btn:hover {
+          color: var(--text-primary);
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .market-tab-btn.active {
+          background: var(--bg-glass);
+          color: var(--accent-primary);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+          border: 1px solid rgba(0, 242, 254, 0.2);
         }
 
         .filter-section {
